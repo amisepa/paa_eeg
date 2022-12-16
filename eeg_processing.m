@@ -291,31 +291,11 @@ STUDY = std_makedesign(STUDY, ALLEEG, 1, 'name','STUDY.design 1','delfiles','off
 [STUDY,EEG] = pop_savestudy(STUDY,EEG,'filename','presentiment_eeg.study','filepath',dataFolder);
 CURRENTSTUDY = 1; EEG = ALLEEG; CURRENTSET = 1:length(EEG);
 
-% Stats with EEGLAB
-STUDY = pop_statparams(STUDY, 'condstats','on','method','perm','mcorrect','fdr','alpha',0.01);
-STUDY = pop_erpparams(STUDY, 'plotconditions','together','timerange',[-1950 1950] ,'averagechan','rms');
-std_erpplot(STUDY,ALLEEG,'channels',{EEG(1).chanlocs.labels}, 'design', 1);
-
-% Compare conditions with SE
-channel = {'Fz'};
-[STUDY, erpdata, erptimes] = std_erpplot(STUDY, ALLEEG, 'channels', channel, 'timerange', [-1950 1950], 'noplot', 'on');
-std_plotcurve(erptimes, erpdata, 'plotconditions', 'together', 'plotstderr', 'on', 'figure', 'on', 'filter', 10);
-legend('Pleasant', 'Neutral', 'Unpleasant'); title([char(channel) ' (mean + SE)']);
-
-gong
-
-% % To load a .daterp file
+% To load a .daterp file
 % fileData = load('-mat', 'C:\Users\Cedric\Documents\MATLAB\presentiment_eeg\data_clean\sub-01\01.daterp');
 
-%% LIMO
 
-clear; close all;clc
-folder = 'D:\presentiment_eeg\data_clean';
-eeglab; close;
 
-[STUDY, ALLEEG] = pop_loadstudy('filename','presentiment_eeg.study','filepath',folder);
-[STUDY, ALLEEG] = std_checkset(STUDY, ALLEEG);
-CURRENTSTUDY = 1; EEG = ALLEEG; CURRENTSET = [1:length(EEG)];
 
 eeglab redraw
 
