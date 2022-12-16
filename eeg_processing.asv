@@ -12,7 +12,7 @@ pop_editoptions('option_parallel', 1);  % parrallel computing ON (1) or OFF (0)
 pop_editoptions('option_single', 0);    % double (0) or single (1) precision
 
 progressbar('Processing files')
-for iSub = 4:length(sInfo)
+for iSub = 1:length(sInfo)
     tstart = tic;
 
     % Import Neuroscan data
@@ -163,8 +163,8 @@ for iSub = 4:length(sInfo)
     
     % Epoch
     EEG = pop_epoch(EEG, {'2' '4' '8'}, [-2 2],'epochinfo', 'yes'); %2 = pleasant pictures; 4 = neutral; 8 = unpleasant; 1 = checkerboard
-%     pop_eegplot(EEG,1,1,1);
-%     saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_ICA_epoched.fig'])); close(gcf)
+    pop_eegplot(EEG,1,1,1);
+    saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_ICA_epoched.fig'])); close(gcf)
 
     % Remove bad trials
 %     oriEEG = EEG;
@@ -179,7 +179,7 @@ for iSub = 4:length(sInfo)
 
     % Plot ERP
     figure; pop_timtopo(EEG, [-1300 1950], NaN);
-    saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_ERP.png'])); close(gcf)
+    saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_ERP.fig'])); close(gcf)
 
     progressbar(iSub / length(sInfo))
 
