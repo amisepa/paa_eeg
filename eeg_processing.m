@@ -7,8 +7,8 @@ load(fullfile(codeFolder, 'chanLabels.mat'));
 eeglab; close;
 cd(codeFolder)
 
-pop_editoptions('option_parallel', 0);
-pop_editoptions('option_single', 0); % ensure double precision
+pop_editoptions('option_parallel', 1);  % parrallel computing ON (1) or OFF (0)
+pop_editoptions('option_single', 0);    % double (0) or single (1) precision
 
 progressbar('Processing files')
 for iSub = 1:length(sInfo)
@@ -148,14 +148,14 @@ for iSub = 1:length(sInfo)
     saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_after-ICA.fig'])); close(gcf)
     
     % Apply CSD-transformation
-    locPath = fileparts(which('csd_transform.m'));
-    chanlocfile = fullfile(locPath, 'chanlocs_standard_BEM_1005.ced');
-    EEG = csd_transform(EEG,1,chanlocfile);  % CSD-transformation using .ced loc file
+%     locPath = fileparts(which('csd_transform.m'));
+%     chanlocfile = fullfile(locPath, 'chanlocs_standard_BEM_1005.ced');
+%     EEG = csd_transform(EEG,1,chanlocfile);  % CSD-transformation using .ced loc file
     
-    % Remove trials right after key pad trials to avoid biases
-    idx = find(strcmpi({EEG.event.type}, '1')) + 1;
-    idx(end) = [];  % delete if it is the last trial
-    EEG.event(idx) = [];
+%     % Remove trials right after key pad trials to avoid biases
+%     idx = find(strcmpi({EEG.event.type}, '1')) + 1;
+%     idx(end) = [];  % delete if it is the last trial
+%     EEG.event(idx) = [];
 
     % Epoch
     EEG = pop_epoch(EEG, {'2' '4' '8'}, [-2 2],'epochinfo', 'yes'); %2 = pleasant pictures; 4 = neutral; 8 = unpleasant; 1 = checkerboard
@@ -183,7 +183,7 @@ for iSub = 1:length(sInfo)
     badPow = find(isoutlier(sigPower,'mean'));      % 'mean' (more lax) 'median' 'quartiles' 'grubbs' 'gesd'
 
      %%%%%%%%%% LOST CODE HERE %%%%%%%%%
-   badTrials = sort([badAmp badPow]);
+    badTrials = sort([badAmp badPow]);
     EEG = pop_rejepoch(EEG, badTrials, 0);
     sinfo(iSub).nTrials = size(EEG.data,3);
 
