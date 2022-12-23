@@ -21,19 +21,23 @@ channel = {'O2'};
 std_plotcurve(erptimes, erpdata, 'plotconditions', 'together', 'plotstderr', 'on', 'figure', 'on', 'filter', 10);
 legend('Pleasant', 'Neutral', 'Unpleasant'); title([char(channel) ' (mean + SE)']);
 
+for iSub = 1:size(STUDY.datasetinfo,2)
+    trials(iSub,:) = [ STUDY.datasetinfo(iSub).trialinfo ];
+end
+
 channel = {'FCz'};
 [STUDY, erpdata, erptimes] = std_erpplot(STUDY, ALLEEG, 'channels', channel, 'timerange', [-1300 1950], 'noplot', 'on');
 std_plotcurve(erptimes, erpdata, 'plotconditions', 'together', 'plotstderr', 'on', 'figure', 'on', 'filter', 10);
 legend('Pleasant', 'Neutral', 'Unpleasant'); title([char(channel) ' (mean + SE)']);
 
 
+% %% Hierarchichal linear modeling - Compute 1st level (post-stimulus)
+% pop_limo(STUDY, ALLEEG, 'method','WLS','measure','daterp', ...
+%     'timelim',[-50 1950],'erase','on','splitreg','off','interaction','off');
+
 %% Hierarchichal linear modeling - Compute 1st level (pre-stimulus)
 pop_limo(STUDY, ALLEEG,'method','WLS','measure','daterp', ...
     'timelim',[-1300 15],'erase','on','splitreg','off','interaction','off');
-
-%% Hierarchichal linear modeling - Compute 1st level (post-stimulus)
-% pop_limo(STUDY, ALLEEG, 'method','WLS','measure','daterp', ...
-%     'timelim',[-50 1950],'erase','on','splitreg','off','interaction','off');
 
 %% 2nd level (post-stimulus)
 
