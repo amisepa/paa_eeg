@@ -13,7 +13,7 @@ pop_editoptions('option_single', 0);    % double (0) or single (1) precision
 
 progressbar('Processing files')
 for iSub = 36:length(sInfo)
-    tstart = tic;
+%     tstart = tic;
 
     % Import Neuroscan data
     if sInfo(iSub).group == 1
@@ -189,8 +189,8 @@ for iSub = 36:length(sInfo)
 
     % Remove bad trials
 %     oriEEG = EEG;
-    badTrials = find_badTrials(EEG); 
-    EEG = pop_rejepoch(EEG, badTrials, 0);
+%     badTrials = find_badTrials(EEG); 
+%     EEG = pop_rejepoch(EEG, badTrials, 0);
     sInfo(iSub).nTrials = size(EEG.data,3);
     pop_eegplot(EEG,1,1,1);
     saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_FINAL.fig'])); close(gcf)
