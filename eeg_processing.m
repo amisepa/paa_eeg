@@ -77,6 +77,13 @@ for iSub = 36:length(sInfo)
     EEG.data = tmp;
     EEG = eeg_checkset(EEG);
     
+    %%%%%%%%%%%%% TRY THIS FOR ADDING REF BACK BUT MUST BE DONE AFTER ASR!!
+%     [EEG.chanlocs.ref] = deal('Cz');
+%     EEG = pop_chanedit(EEG, 'append',63,'changefield',{64 'labels' 'Cz'},'lookup','eeglabroot/plugins/dipfit3.3/standard_BEM/elec/standard_1005.elc',...
+%                    'eval','chans = pop_chancenter( chans, [],[]);','changefield',{64 'type' 'REF'});
+%     EEG = pop_reref( EEG, [],'refloc',struct('labels',{'Cz'},'type',{'REF'},'theta',{-94.2457},'radius',{0.023785},'X',{-0.54445},'Y',{7.3339},'Z',{98.2349},...
+%                     'sph_theta',{94.2457},'sph_phi',{85.7187},'sph_radius',{98.5098},'urchan',{64},'ref',{''},'datachan',{0}));
+
     % Import channel locations
     locPath = fileparts(which('dipfitdefs.m'));    
     EEG = pop_chanedit(EEG,'lookup',fullfile(locPath,'standard_BEM','elec','standard_1005.elc'));
@@ -113,8 +120,13 @@ for iSub = 36:length(sInfo)
     newPath = fullfile(outputDir, sprintf('sub-%2.2d',iSub)); mkdir(newPath)
     saveas(gcf,fullfile(newPath, [sprintf('sub-%2.2d',iSub) '_bad-channels.png'])); close(gcf)
     
-    % Re-reference to average
+    % Re-reference to average after adding zero-filled channel
+    EEG.nbchan = EEG.nbchan+1;
+    EEG.data(end+1,:) = zeros(1, EEG.pnts);
+    EEG.chanlocs(1,EEG.nbchan).labels = 'initialReference';
     EEG = pop_reref(EEG, []);
+    EEG = pop_select( EEG,'nochannel',{'initialReference'});
+
 
     % Detect large artifacts with ASR
 % %     oriEEG = EEG; 
