@@ -1,22 +1,19 @@
-%% %%%%%%%%%%%%%%%%%% GAMBLER'S FALLACY EFFECT %%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%% PRECEDING TRIALS (Gambler's fallacy effect) %%%%%%%%%%%%%%%%%%%%%%
 
 clear; close all;clc
 mainDir = 'D:\presentiment_eeg';
 dataDir = fullfile(mainDir, 'data_raw');
 codeDir = fullfile(mainDir, 'paa_eeg');
-load(fullfile(codeDir, 'sInfo_old.mat'));
+load(fullfile(codeDir, 'sInfo_old2.mat'));
 
-ntrials = 3;  % number of preceding trials to examine
+% number of preceding trials to examine
+ntrials = 2;  
 
 % Gather 3 markers preceding each event
-% count1 = 1;
-% count2 = 1;
-% count3 = 1;
 pleasant = [];
 neutral = [];
 unpleasant = [];
 emotional = [];
-% figure('color','w');
 progressbar('Getting event info')
 for iSub = 1:length(sInfo)
     fprintf('Subject %2.2d \n', iSub)
@@ -33,7 +30,8 @@ for iSub = 1:length(sInfo)
     events(isnan(events)) = [];
     events(events == 255 | events == 239 | events == 223 | events == 207) = [];
     summary(categorical(events))
-    [~,p_random(iSub)] = runstest(str2double(events));
+    error('check that events are not already numbers before checking randomness!')
+    [~,p_random(iSub)] = runstest(events);
     if p_random(iSub) < 0.05, warning('This trial sequence is no random'); end
 
 %     pleasant = [];
@@ -58,7 +56,7 @@ for iSub = 1:length(sInfo)
             neutral = [ neutral events(iEv-ntrials:iEv-1) ];
 
             % track neutral trials with 3 previous emotional trials
-            if sum(events(iEv-ntrials:iEv-1) == 2 | events(iEv-ntrials:iEv-1) == 8) == 3
+            if sum( events(iEv-ntrials:iEv-1) == 2 | events(iEv-ntrials:iEv-1) == 8 ) == 3
                 expectNeutral(iEv) = 1;
             else
                 expectNeutral(iEv) = 0;
@@ -73,9 +71,9 @@ for iSub = 1:length(sInfo)
 
             % track Unplesant trials preceded by 3 neutral ones
             if sum( events(iEv-ntrials:iEv-1) == 4 ) == 3
-                expectPleasant(iEv) = 1;
+                expectUnpleasant(iEv) = 1;
             else
-                expectPleasant(iEv) = 0;
+                expectUnpleasant(iEv) = 0;
             end
 
         % Emotional condition
@@ -83,7 +81,7 @@ for iSub = 1:length(sInfo)
 
             % track emotional trials preceded by 3 neutral trials
             emotional =  [ emotional events(iEv-ntrials:iEv-1) ];
-            if sum(events(iEv-ntrials:iEv-1) == 4) == 3
+            if sum( events(iEv-ntrials:iEv-1) == 4 ) == 3
                 expectEmotional(iEv) = 1;
             else
                 expectEmotional(iEv) = 0;
@@ -93,14 +91,6 @@ for iSub = 1:length(sInfo)
         progressbar([], iEv/length(events));
     end
     
-%     % remove bad events
-%     pleasant(isnan(pleasant)) = [];
-%     neutral(isnan(neutral)) = [];
-%     unpleasant(isnan(unpleasant)) = [];
-%     pleasant(pleasant == 255 | pleasant == 239 | pleasant == 223 | pleasant == 207) = [];
-%     neutral(neutral == 255 | neutral == 239 | neutral == 223 | neutral == 207) = [];
-%     unpleasant(unpleasant == 255 | unpleasant == 239 | unpleasant == 223 | unpleasant == 207) = [];
-%     
 %     subplot(3,1,1); 
 %     histogram(pleasant); hold on;
 %     subplot(3,1,2); 
@@ -119,13 +109,13 @@ end
 % subplot(3,1,2); title('3 events preceding Neutral trials')
 % subplot(3,1,3); title('3 events preceding Unpleasant trials')
 
-% Remove bad events
-pleasant(isnan(pleasant)) = [];
-neutral(isnan(neutral)) = [];
-unpleasant(isnan(unpleasant)) = [];
-pleasant(pleasant == 255 | pleasant == 239 | pleasant == 223 | pleasant == 207) = [];
-neutral(neutral == 255 | neutral == 239 | neutral == 223 | neutral == 207) = [];
-unpleasant(unpleasant == 255 | unpleasant == 239 | unpleasant == 223 | unpleasant == 207) = [];
+% % Remove bad events
+% pleasant(isnan(pleasant)) = [];
+% neutral(isnan(neutral)) = [];
+% unpleasant(isnan(unpleasant)) = [];
+% pleasant(pleasant == 255 | pleasant == 239 | pleasant == 223 | pleasant == 207) = [];
+% neutral(neutral == 255 | neutral == 239 | neutral == 223 | neutral == 207) = [];
+% unpleasant(unpleasant == 255 | unpleasant == 239 | unpleasant == 223 | unpleasant == 207) = [];
 
 subplot(3,1,1);
 histogram(pleasant); hold on;
@@ -180,6 +170,7 @@ save(fullfile(outDir, '3prev_trials_H0.mat'), 'results_H0', '-v7.3')
 mcctype = 0;
 [mask, pcorr, nClust] = compute_mcc(tvals, pvals, tvals_H0, pvals_H0, mcctype, 0.05, neighbormatrix);
 sum(mask)
+
 
 %% %%%%%%%%%%%%%%%%%% TIME-ON-TASK EFFECT %%%%%%%%%%%%%%%%%%%
 
